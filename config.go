@@ -20,9 +20,9 @@ var Config = loadConfig()
 
 //ConfigST struct
 type ConfigST struct {
-	mutex   sync.RWMutex
-	Server  ServerST            `json:"server"`
-	Streams map[string]StreamST `json:"streams"`
+	mutex     sync.RWMutex
+	Server    ServerST            `json:"server"`
+	Streams   map[string]StreamST `json:"streams"`
 	LastError error
 }
 

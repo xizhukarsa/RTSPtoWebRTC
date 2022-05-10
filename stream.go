@@ -21,6 +21,7 @@ func serveStreams() {
 		}
 	}
 }
+
 func RTSPWorkerLoop(name, url string, OnDemand, DisableAudio, Debug bool) {
 	defer Config.RunUnlock(name)
 	for {
@@ -37,6 +38,7 @@ func RTSPWorkerLoop(name, url string, OnDemand, DisableAudio, Debug bool) {
 		time.Sleep(1 * time.Second)
 	}
 }
+
 func RTSPWorker(name, url string, OnDemand, DisableAudio, Debug bool) error {
 	keyTest := time.NewTimer(20 * time.Second)
 	clientTest := time.NewTimer(20 * time.Second)

@@ -1,7 +1,11 @@
 package main
 
 import (
+	"crypto/md5"
+	"encoding/base64"
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -23,7 +27,7 @@ func serveHTTP() {
 
 	router := gin.Default()
 	router.Use(CORSMiddleware())
-	
+
 	if _, err := os.Stat("./web"); !os.IsNotExist(err) {
 		router.LoadHTMLGlob("web/templates/*")
 		router.GET("/", HTTPAPIServerIndex)
@@ -32,6 +36,7 @@ func serveHTTP() {
 	router.POST("/stream/receiver/:uuid", HTTPAPIServerStreamWebRTC)
 	router.GET("/stream/codec/:uuid", HTTPAPIServerStreamCodec)
 	router.POST("/stream", HTTPAPIServerStreamWebRTC2)
+	router.POST("/stream/add", HTTPAPIServerStreamAdd)
 
 	router.StaticFS("/static", http.Dir("web/static"))
 	err := router.Run(Config.Server.HTTPPort)
@@ -170,6 +175,47 @@ func CORSMiddleware() gin.HandlerFunc {
 		c.Next()
 	}
 }
+func HTTPAPIServerStreamAdd(c *gin.Context) {
+	defer c.Request.Body.Close()
+
+	buf, err := ioutil.ReadAll(c.Request.Body)
+	type Ret struct {
+		Succeed bool        `json:"succeed"`
+		ErrCode int         `json:"errCode"`
+		ErrMsg  string      `json:"errMsg"`
+		Data    interface{} `json:"data"`
+	}
+	if nil != err {
+		c.JSON(http.StatusOK, Ret{
+			Succeed: false,
+			ErrCode: -1,
+			ErrMsg:  fmt.Errorf("请求内容读取失败 %v", err).Error(),
+		})
+		return
+	}
+
+	var steam StreamST
+	if err := json.Unmarshal(buf, &steam); nil != err {
+		c.JSON(http.StatusOK, Ret{
+			Succeed: false,
+			ErrCode: -1,
+			ErrMsg:  fmt.Errorf("请求内容解析失败 %v", err).Error(),
+		})
+		return
+	}
+
+	md5buf := md5.Sum([]byte(steam.URL))
+	key := fmt.Sprintf("%v%v", base64.StdEncoding.EncodeToString(md5buf[:]), time.Now().UnixNano())
+
+	go RTSPWorkerLoop(key, steam.URL, steam.OnDemand, steam.DisableAudio, steam.Debug)
+
+	c.JSON(http.StatusOK, Ret{
+		Succeed: true,
+		Data: map[string]interface{}{
+			"suuid": key,
+		},
+	})
+}
 
 type Response struct {
 	Tracks []string `json:"tracks"`
@@ -177,7 +223,7 @@ type Response struct {
 }
 
 type ResponseError struct {
-	Error  string   `json:"error"`
+	Error string `json:"error"`
 }
 
 func HTTPAPIServerStreamWebRTC2(c *gin.Context) {
