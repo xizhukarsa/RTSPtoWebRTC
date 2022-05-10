@@ -87,3 +87,6 @@ Examples of working with video on golang
 - [RTSPtoHLSLL](https://github.com/deepch/RTSPtoHLSLL)
 
 [![paypal.me/AndreySemochkin](https://ionicabizau.github.io/badges/paypal.svg)](https://www.paypal.me/AndreySemochkin) - You can make one-time donations via PayPal. I'll probably buy a ~~coffee~~ tea. :tea:
+
+## Add api to add steam
+`curl -X POST -d '{"on_demand":false,"url":"rtsp://192.168.2.233:8557/h264"}' http://localhost:8083/stream/add`
