@@ -1,8 +1,6 @@
 package main
 
 import (
-	"crypto/md5"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -204,8 +202,7 @@ func HTTPAPIServerStreamAdd(c *gin.Context) {
 		return
 	}
 
-	md5buf := md5.Sum([]byte(steam.URL))
-	key := fmt.Sprintf("%v%v", base64.StdEncoding.EncodeToString(md5buf[:]), time.Now().UnixNano())
+	key := fmt.Sprintf("%v", time.Now().UnixNano())
 
 	go RTSPWorkerLoop(key, steam.URL, steam.OnDemand, steam.DisableAudio, steam.Debug)
 
