@@ -183,7 +183,8 @@ func (element *ConfigST) coGe(suuid string) []av.CodecData {
 			for _, codec := range tmp.Codecs {
 				if codec.Type() == av.H264 {
 					codecVideo := codec.(h264parser.CodecData)
-					if codecVideo.SPS() != nil && codecVideo.PPS() != nil && len(codecVideo.SPS()) > 0 && len(codecVideo.PPS()) > 0 {
+					if len(codecVideo.RecordInfo.SPS) > 0 && len(codecVideo.RecordInfo.PPS) > 0 && codecVideo.SPS() != nil && codecVideo.PPS() != nil && len(codecVideo.SPS()) > 0 && len(codecVideo.PPS()) > 0 {
+						// if codecVideo.SPS() != nil && codecVideo.PPS() != nil && len(codecVideo.SPS()) > 0 && len(codecVideo.PPS()) > 0 {
 						//ok
 						//log.Println("Ok Video Ready to play")
 					} else {
