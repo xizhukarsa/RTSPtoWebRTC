@@ -8,6 +8,8 @@ import (
 )
 
 func main() {
+	log.SetOutput(os.Stdout)
+
 	go serveHTTP()
 	go serveStreams()
 

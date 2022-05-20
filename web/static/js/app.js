@@ -48,6 +48,6 @@ const initWebRTC = (videoNode, suuid) => {
   });
 };
 
-initWebRTC(document.querySelector('#videoElem'), 'H264_AAC');
-initWebRTC(document.querySelector('#videoElem1'), 'H264_AAC1');
+initWebRTC(document.querySelector('#videoElem'), document.querySelector("#suuid").value);
+// initWebRTC(document.querySelector('#videoElem1'), 'H264_AAC1');
 // initWebRTC(document.querySelector('videoElem1', 'H264_AAC1'));

@@ -25,6 +25,7 @@ func serveHTTP() {
 
 	router := gin.Default()
 	router.Use(CORSMiddleware())
+	router.Use(gin.Recovery())
 
 	if _, err := os.Stat("./web"); !os.IsNotExist(err) {
 		router.LoadHTMLGlob("web/templates/*")
@@ -203,6 +204,8 @@ func HTTPAPIServerStreamAdd(c *gin.Context) {
 	}
 
 	key := fmt.Sprintf("%v", time.Now().UnixNano())
+	steam.Cl = make(map[string]viewer)
+	Config.Streams[key] = steam
 
 	go RTSPWorkerLoop(key, steam.URL, steam.OnDemand, steam.DisableAudio, steam.Debug)
 

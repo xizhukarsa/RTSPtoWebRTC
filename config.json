@@ -2,10 +2,6 @@
   "server": {
     "http_port": ":8083"    
   },
-  "streams": {
-    "H264_AAC": {
-      "on_demand": false,
-      "url": "rtsp://192.168.2.233:8557/h264"
-    }
+  "streams": {    
   }
 }
