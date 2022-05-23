@@ -36,6 +36,7 @@ func serveHTTP() {
 	router.GET("/stream/codec/:uuid", HTTPAPIServerStreamCodec)
 	router.POST("/stream", HTTPAPIServerStreamWebRTC2)
 	router.POST("/stream/add", HTTPAPIServerStreamAdd)
+	router.POST("/stream/list", HTTPAPIServerStreamList)
 
 	router.StaticFS("/static", http.Dir("web/static"))
 	err := router.Run(Config.Server.HTTPPort)
@@ -174,6 +175,28 @@ func CORSMiddleware() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func HTTPAPIServerStreamList(c *gin.Context) {
+	retList := []map[string]interface{}{}
+	for k, v := range Config.Streams {
+		retList = append(retList, map[string]interface{}{
+			"rtsp":  v.URL,
+			"suuid": k,
+		})
+	}
+	type Ret struct {
+		Succeed bool        `json:"succeed"`
+		ErrCode int         `json:"errCode"`
+		ErrMsg  string      `json:"errMsg"`
+		Data    interface{} `json:"data"`
+	}
+	c.JSON(http.StatusOK, Ret{
+		Succeed: true,
+		Data:    retList,
+	})
+	return
+}
+
 func HTTPAPIServerStreamAdd(c *gin.Context) {
 	defer c.Request.Body.Close()
 
